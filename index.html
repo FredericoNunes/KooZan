@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>KooZan</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+		<!-- Font awesome is required for the chalkboard plugin -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <!-- Custom controls plugin is used to for opening and closing annotation modes. -->
+        <script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/plugin.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/style.css">
+        <!-- Chalkboard plugin -->
+        <script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/plugin.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/style.css">
+        <script src="node_modules/reveal.js-menu/menu.js"></script>
+		<!-- Theme used for syntax highlighted code -->
+		<style>
+			/* Custom CSS for Chalkboard Notes Canvas Opacity */
+			.reveal .overlay {
+			    backdrop-filter:blur(0px); /* Set your desired opacity value */
+			}
+		</style>
+		
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<section data-menu-title="O Ambiente">O Ambiente</section>
+
+				</section>
+			    <section>
+					<section data-background-gradient="radial-gradient(#75aadb, #00679a)" data-menu-title="A KooZan" >O Conceito: 電子鉱山</section>
+					<section data-menu-title="A tradução" >電子鉱山 - Esses ideogramas podem ser traduzidos como: "Mina Eletrônica"</section>
+				</section>
+			    <section>
+					<section data-background-gradient="radial-gradient(#002776, #00273e)" data-menu-title="Materias">Projetos e Pesquisas</section>
+						<section>
+							<a href="https://observablehq.com/@koozaneconomics">Economia</a>
+						</section>
+					    <section data-background-color="#ffffff">
+						    <a>Esportes</a>
+					        <div>
+								<iframe  width="550" height="370" frameborder="0"
+									src="https://observablehq.com/embed/ef5f0835b277ad99@837?cells=IdadeMarca">
+								</iframe>
+							</div>
+						</section>
+						<section data-background-color="#ffffff">
+							<a href="https://observablehq.com/@koozaneconomics">Política</a>
+							<div>
+							<iframe width="550" height="570" frameborder="0"
+								 src="https://observablehq.com/embed/fd61001eeb561e79?cells=map">
+							</iframe>
+							</div>
+						</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				
+				customcontrols: {
+                controls: [
+				 {
+                    id: 'toggle-overview',
+                    title: 'Toggle overview (O)',
+                    icon: '<i class="fa fa-th"></i>',
+                    action: 'Reveal.toggleOverview();'
+                  },
+                  { icon: '<i class="fa fa-pen-square"></i>',
+                    title: 'Abrir Quadro (B)',
+                    action: 'RevealChalkboard.toggleChalkboard();'
+                  },
+                  { icon: '<i class="fa fa-pen"></i>',
+                    title: 'Anotações(C)',
+                    action: 'RevealChalkboard.toggleNotesCanvas();'
+                  }
+                ]
+			   },
+             
+			   // Learn about plugins: https://revealjs.com/plugins/
+			   plugins: [  RevealMarkdown, RevealHighlight, RevealNotes,
+			    RevealCustomControls,RevealChalkboard,RevealMenu  ]
+			});
+		</script>
+	</body>
+</html>
