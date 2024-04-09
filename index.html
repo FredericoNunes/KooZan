@@ -19,6 +19,12 @@
         <script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/plugin.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/style.css">
         <script src="node_modules/reveal.js-menu/menu.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script>
+			Reveal.initialize({
+			  plugins: [ RevealMarkdown ]
+			});
+		  </script>
 		<!-- Theme used for syntax highlighted code -->
 		<style>
 			/* Custom CSS for Chalkboard Notes Canvas Opacity */
@@ -26,18 +32,193 @@
 			    backdrop-filter:blur(0px); /* Set your desired opacity value */
 			}
 		</style>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+		
+		<!-- and it's easy to individually load additional languages -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+		
+		<script>hljs.highlightAll();</script>
 		
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<section data-menu-title="O Ambiente">O Ambiente</section>
+					<section data-menu-title="O Ambiente"><p>Meu Portfólio</p>
+						<ul>
+							<li>Para esqueda sobre coisas técnicas</li>
+							<li>Para baixo para saber sobre mim</li>
+						</ul>
+					</section>
 
 				</section>
+
+			<section>
+				<section data-menu-title="Inadimplência Brasil">
+					
+					   <p>Inadimplência no Brasil</p>
+
+					<p>Fatores que Influenciam e Previsões para 2024</p>
+
+				</section>
+
+				<section data-menu-title="O Ciclo">
+					
+				<ul>
+						<li>A inadimplência no Brasil chegou a 3,5% do PIB em Novembro de 2023</li>
+				    <li>Antes da pandemia do Covid-19 o nivel atigindo era 3,1%</li>
+				    <li>Durante a pandemia o nivel caiu para 2,1%, o menor valor da série histórica</li>
+				</ul>
+				</section>
+
+				<section data-background-gradient="radial-gradient( #00679a,#75aadb)" data-menu-title="Série histórica">
+
+				    
+					<iframe width="100%" height="500" frameborder="0"src="https://observablehq.com/embed/2c5662c407bd9008?cells=plot_inad"></iframe>
+
+			    </section>
+				<section data-menu-title="Qual fator tem Influência?">
+
+				    <ul>Qual série macroeconômica mais explica a queda e elevação da indadimplência nos últimos 4 anos?</ul>
+					
+
+			    </section>
+				<section data-menu-title="O Método">
+					    <ul>
+							<li>Coleta dos Dados</li>
+							<li>Logistica vs VECM</li>
+						</ul>
+				</section>	
+
+
+			    
+
+				<section data-auto-animate>
+					<h5 data-id="code-title">Coleta de Dados Bacen</h5>
+					<pre data-id="code-animation">
+						<code class="python" data-trim data-line-numbers="|1|2-6|7|12|14-19|20">
+						def get_serie_banco_central(numero_serie,data_inicial,data_final):
+						    """{"Selic":"1178"}
+						       {"Inadimplência":"21082"}
+						       {"M2 Novo":27810}
+						       {"Cambio BRL-USD":1}
+						    """
+						    url = f"http://api.bcb.gov.br/dados/serie/bcdata.sgs.{numero_serie}/dados?formato=json&dataInicial={data_inicial}&dataFinal={data_final} "
+						    payload = {}
+						    headers = {
+						      'Content-Type': 'application/json'
+						    }
+						    response = requests.request("GET", url, headers=headers, data = payload,verify=False)
+				    
+						    response = response.json()
+						    bacen_data = pd.DataFrame(response)
+						    data = [datetime.datetime.strptime(dia,'%d/%m/%Y') for dia in bacen_data['data'].values]
+						    data = [pd.to_datetime(dia).date() for dia in data]
+						    bacen_data['data'] = data
+						    bacen_data.index = data
+						    return bacen_data		
+					</code></pre>
+				</section>
+
+				<section data-auto-animate>
+					<h5 data-id="code-title">Coleta de Dados IBGE </h5>
+					<pre data-id="code-animation">
+					<code class="python" data-trim data-line-numbers="1,2|18,19|35,36|52,53">
+				    def pnad_renda_real():
+				    		url = "https://apisidra.ibge.gov.br/values/t/6388/n1/all/v/5934/p/all"
+				    		payload = {}
+				    		headers = {'Content-Type': 'application/json'}
+				    		response = requests.request("GET", url, headers=headers, data = payload)
+				    		response = response.json()
+				    		ibge_data = pd.DataFrame(response)
+				    		ibge_data['V'][1:] = [float(valor) for valor in ibge_data['V'][1:]]
+				    		ibge_data = ibge_data.pivot(index='D3C',
+				    							columns='D2N',
+				    							values='V')
+				    		ibge_data = ibge_data.drop(columns=['Variável'],index=['Trimestre Móvel (Código)'])
+				    		dti = pd.date_range('2012-03-01', periods=len(ibge_data.index), freq='MS')
+				    		ibge_data = ibge_data.set_index(dti)
+				    		ibge_data = ibge_data.rename_axis('Mensal')
+				    		return ibge_data
+				    
+				    def pnad_desemprego():
+				    		url = "https://apisidra.ibge.gov.br/values/t/6381/n1/all/v/4099/p/all"
+				    		payload = {}
+				    		headers = {'Content-Type': 'application/json'}
+				    		response = requests.request("GET", url, headers=headers, data = payload)
+				    		response = response.json()
+				    		ibge_data = pd.DataFrame(response)
+				    		ibge_data['V'][1:] = [float(valor) for valor in ibge_data['V'][1:]]
+				    		ibge_data = ibge_data.pivot(index='D3C',
+				    							columns='D2N',
+				    							values='V')
+				    		ibge_data = ibge_data.drop(columns=['Variável'],index=['Trimestre Móvel (Código)'])
+				    		dti = pd.date_range('2012-03-01', periods=len(ibge_data.index), freq='MS')
+				    		ibge_data = ibge_data.set_index(dti)
+				    		ibge_data = ibge_data.rename_axis('Mensal')
+				    		return ibge_data
+				    
+				    def producaoidustrial():
+				    		url = 'https://apisidra.ibge.gov.br/values/t/8887/n1/all/v/12606/p/all/c543/129278/d/v12606%205'
+				    		payload = {}
+				    		headers = {'Content-Type': 'application/json'}
+				    		response = requests.request("GET", url, headers=headers, data = payload)
+				    		response = response.json()
+				    		ibge_data = pd.DataFrame(response)
+				    		ibge_data['V'][1:] = [float(valor) for valor in ibge_data['V'][1:]]
+				    		ibge_data = ibge_data.pivot(index='D3C',
+				    							columns='D2N',
+				    							values='V')
+				    		ibge_data = ibge_data.drop(columns=['Variável'],index=['Mês (Código)'])
+				    		dti = pd.date_range('2002-01-01', periods=len(ibge_data.index), freq='MS')
+				    		ibge_data = ibge_data.set_index(dti)
+				    		ibge_data = ibge_data.rename_axis('Mensal')
+				    		return ibge_data
+				    
+				    def ipcamensal():
+				    		url = "https://apisidra.ibge.gov.br/values/t//1737/n1/all/v/2266/p/all/d/v2266%2013"
+				    		payload = {}
+				    		headers = {'Content-Type': 'application/json'}
+				    		response = requests.request("GET", url, headers=headers, data = payload)
+				    		response = response.json()
+				    		ibge_data = pd.DataFrame(response)
+				    		ibge_data = ibge_data[2:]
+				    		ibge_data['V'] = [float(valor) for valor in ibge_data['V']]
+				    		ibge_data = ibge_data.pivot(index='D3C',
+				    							columns='D2N',
+				    							values='V')
+				    		dti = pd.date_range('1979-12-31', periods=len(ibge_data.index), freq='MS')
+				    		ibge_data = ibge_data.set_index(dti)
+				    		ibge_data = ibge_data.rename_axis('Mensal')
+				    		return ibge_data			
+					</code></pre>
+				</section>
+			<section data-menu-title="Resumo dos Dados">
+					<ul>
+						<li>Total de 8 Séries</li>
+						<li>4 do Banco central</li>
+						<li>4 do IBGE</li>
+						<li>Database Jan-2012 a Fev-2024</li>
+					</ul>
+			</section>	
+			<section data-background-gradient="radial-gradient( #00679a,#75aadb)" data-menu-title="Previsões">
+
+				    
+				<iframe width="100%" height="500" frameborder="0" src="https://observablehq.com/embed/2c5662c407bd9008@451?cells=forecastChart"></iframe>
+
+			</section>
+			</section>
+			</section>
 			    <section>
-					<section data-background-gradient="radial-gradient(#75aadb, #00679a)" data-menu-title="A KooZan" >O Conceito: 電子鉱山</section>
-					<section data-menu-title="A tradução" >電子鉱山 - Esses ideogramas podem ser traduzidos como: "Mina Eletrônica"</section>
+					<section data-background-gradient="radial-gradient( #00273e,#75aadb)" data-menu-title="A KooZan" >
+						<p>O Conceito: 電子鉱山</p>
+						 <p>Denshi KooZan</p></section>
+					<section data-menu-title="A tradução"><p>電子鉱山</p>
+						<p>
+							Esses ideogramas podem ser traduzidos como: "Mina Eletrônica"
+						</p>
+						</section>
 				</section>
 			    <section>
 					<section data-background-gradient="radial-gradient(#002776, #00273e)" data-menu-title="Materias">Projetos e Pesquisas</section>
@@ -47,7 +228,7 @@
 					    <section data-background-color="#ffffff">
 						    <a>Esportes</a>
 					        <div>
-								<iframe  width="550" height="370" frameborder="0"
+								<iframe  width="550" height="370" 
 									src="https://observablehq.com/embed/ef5f0835b277ad99@837?cells=IdadeMarca">
 								</iframe>
 							</div>
@@ -60,6 +241,11 @@
 							</iframe>
 							</div>
 						</section>
+
+				</section>
+				<section>
+					<section data-menu-title="Os Serviços">Os Serviços</section>
+
 				</section>
 			</div>
 		</div>
@@ -83,14 +269,14 @@
                     icon: '<i class="fa fa-th"></i>',
                     action: 'Reveal.toggleOverview();'
                   },
-                  { icon: '<i class="fa fa-pen-square"></i>',
-                    title: 'Abrir Quadro (B)',
-                    action: 'RevealChalkboard.toggleChalkboard();'
-                  },
-                  { icon: '<i class="fa fa-pen"></i>',
-                    title: 'Anotações(C)',
-                    action: 'RevealChalkboard.toggleNotesCanvas();'
-                  }
+                 // { icon: '<i class="fa fa-pen-square"></i>',
+                  //  title: 'Abrir Quadro (B)',
+                 //   action: 'RevealChalkboard.toggleChalkboard();'
+                 // },
+                 // { icon: '<i class="fa fa-pen"></i>',
+                 //   title: 'Anotações(C)',
+                 //   action: 'RevealChalkboard.toggleNotesCanvas();'
+                 // }
                 ]
 			   },
              
