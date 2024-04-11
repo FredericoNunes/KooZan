@@ -110,7 +110,7 @@
 				<section data-auto-animate>
 					<h5 data-id="code-title">Coleta de Dados Bacen e IBGE</h5>
 					<pre data-id="code-animation">
-						<code class="python" data-trim data-line-numbers="|1|2-6|7|12|13-18|19|21-22|38-39|55-56|72-73">
+						<code class="python" data-trim data-line-numbers="|1|2-6|7|12|13-18|19|21-22|24-25|27-28|30-31">
                             def get_serie_banco_central(numero_serie,data_inicial,data_final):
                                 """{"Selic":"1178"}
                                    {"Inadimplência":"21082"}
@@ -133,71 +133,16 @@
                             	
                             def pnad_renda_real():
                             		url = "https://apisidra.ibge.gov.br/values/t/6388/n1/all/v/5934/p/all"
-                            		payload = {}
-                            		headers = {'Content-Type': 'application/json'}
-                            		response = requests.request("GET", url, headers=headers, data = payload)
-                            		response = response.json()
-                            		ibge_data = pd.DataFrame(response)
-                            		ibge_data['V'][1:] = [float(valor) for valor in ibge_data['V'][1:]]
-                            		ibge_data = ibge_data.pivot(index='D3C',
-                            							columns='D2N',
-                            							values='V')
-                            		ibge_data = ibge_data.drop(columns=['Variável'],index=['Trimestre Móvel (Código)'])
-                            		dti = pd.date_range('2012-03-01', periods=len(ibge_data.index), freq='MS')
-                            		ibge_data = ibge_data.set_index(dti)
-                            		ibge_data = ibge_data.rename_axis('Mensal')
-                            		return ibge_data
                             
                             def pnad_desemprego():
                             		url = "https://apisidra.ibge.gov.br/values/t/6381/n1/all/v/4099/p/all"
-                            		payload = {}
-                            		headers = {'Content-Type': 'application/json'}
-                            		response = requests.request("GET", url, headers=headers, data = payload)
-                            		response = response.json()
-                            		ibge_data = pd.DataFrame(response)
-                            		ibge_data['V'][1:] = [float(valor) for valor in ibge_data['V'][1:]]
-                            		ibge_data = ibge_data.pivot(index='D3C',
-                            							columns='D2N',
-                            							values='V')
-                            		ibge_data = ibge_data.drop(columns=['Variável'],index=['Trimestre Móvel (Código)'])
-                            		dti = pd.date_range('2012-03-01', periods=len(ibge_data.index), freq='MS')
-                            		ibge_data = ibge_data.set_index(dti)
-                            		ibge_data = ibge_data.rename_axis('Mensal')
-                            		return ibge_data
                             
                             def producaoidustrial():
-                            		url = 'https://apisidra.ibge.gov.br/values/t/8887/n1/all/v/12606/p/all/c543/129278/d/v12606%205'
-                            		payload = {}
-                            		headers = {'Content-Type': 'application/json'}
-                            		response = requests.request("GET", url, headers=headers, data = payload)
-                            		response = response.json()
-                            		ibge_data = pd.DataFrame(response)
-                            		ibge_data['V'][1:] = [float(valor) for valor in ibge_data['V'][1:]]
-                            		ibge_data = ibge_data.pivot(index='D3C',
-                            							columns='D2N',
-                            							values='V')
-                            		ibge_data = ibge_data.drop(columns=['Variável'],index=['Mês (Código)'])
-                            		dti = pd.date_range('2002-01-01', periods=len(ibge_data.index), freq='MS')
-                            		ibge_data = ibge_data.set_index(dti)
-                            		ibge_data = ibge_data.rename_axis('Mensal')
-                            		return ibge_data
+                            		url = 'https://apisidra.ibge.gov.br/values/t/8887/n1/all/v/12606/p/all/c543/129278/d/v12606%205'a
                             
                             def ipcamensal():
                             		url = "https://apisidra.ibge.gov.br/values/t//1737/n1/all/v/2266/p/all/d/v2266%2013"
-                            		payload = {}
-                            		headers = {'Content-Type': 'application/json'}
-                            		response = requests.request("GET", url, headers=headers, data = payload)
-                            		response = response.json()
-                            		ibge_data = pd.DataFrame(response)
-                            		ibge_data = ibge_data[2:]
-                            		ibge_data['V'] = [float(valor) for valor in ibge_data['V']]
-                            		ibge_data = ibge_data.pivot(index='D3C',
-                            							columns='D2N',
-                            							values='V')
-                            		dti = pd.date_range('1979-12-31', periods=len(ibge_data.index), freq='MS')
-                            		ibge_data = ibge_data.set_index(dti)
-                            		ibge_data = ibge_data.rename_axis('Mensal')
-                            		return ibge_data			
+	
 					</code>
 				</pre>
 				</section>
